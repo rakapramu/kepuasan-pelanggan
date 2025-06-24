@@ -60,8 +60,10 @@
                     id="class"
                     required
                   >
-                    <option value="Loyal">Pelanggan Loyal</option>
-                    <option value="Disloyal">Pelanggan Tidak Loyal</option>
+                    <option value="Loyal Customer">Pelanggan Loyal</option>
+                    <option value="Disloyal Customer">
+                      Pelanggan Tidak Loyal
+                    </option>
                   </select>
                 </div>
                 <div class="mb-3 col-6">
@@ -77,7 +79,7 @@
                     <option value="Personal Travel">
                       Penerbangan Personal
                     </option>
-                    <option value="Business travel">Penerbangan Bisnis</option>
+                    <option value="Business Travel">Penerbangan Bisnis</option>
                   </select>
                 </div>
               </div>
@@ -312,30 +314,18 @@
       </div>
     </div>
 
-    <!-- <div class="container">
+    <div class="container" v-if="show">
       <div class="alert alert-success mt-4" role="alert">
         Terimakasih Telah Memberikan Penilaian!! Kami Telah Melakukan Pengolahan
         Data Penilaian Anda. Berdasarkan Penilaian Anda, Kami Mendapatkan Hasil
         Berikut:
         <br />
         <br />
-        <h1>Status Kepuasan Anda : Sangat Puas</h1>
-        <h1>Akurasi Penilaian Anda : 87%</h1>
+        <h1>Status Kepuasan Anda : {{ status }}</h1>
+        <h1>Akurasi Penilaian Anda :{{ akurasi }}</h1>
       </div>
-    </div> -->
-  </div>
-
-  <!-- <div class="container">
-    <div class="alert alert-success mt-4" role="alert">
-      Terimakasih Telah Memberikan Penilaian!! Kami Telah Melakukan Pengolahan
-      Data Penilaian Anda. Berdasarkan Penilaian Anda, Kami Mendapatkan Hasil
-      Berikut:
-      <br />
-      <br />
-      <h1>Status Kepuasan Anda : Sangat Puas</h1>
-      <h1>Akurasi Penilaian Anda : 87%</h1>
     </div>
-  </div> -->
+  </div>
 </template>
 
 <script setup>
@@ -347,6 +337,10 @@ import { Client } from "@gradio/client";
 const currentStep = ref(1);
 const totalSteps = ref(7); // Change to 25 for your actual data
 const progressBar = ref(0);
+
+const show = ref(false);
+const status = ref("");
+const akurasi = ref("");
 
 // Form data as reactive object
 const form = reactive({
@@ -397,7 +391,7 @@ const updateProgressBar = () => {
 
 // Function to handle form submission
 const submitForm = async () => {
-  alert(form.Gender);
+  // alert(form.Gender);
   try {
     const client = await Client.connect(
       "RaTech0/airline_passenger_satisfaction"
@@ -427,8 +421,11 @@ const submitForm = async () => {
       Arrival_Delay_in_Minutes: form.Arrival_Delay_in_Minutes,
     });
 
-    console.log(result.data);
+    console.log(result.data[0]);
     currentStep.value = totalSteps.value + 1; // Show confirmation step
+    show.value = true;
+    status.value = result.data[0];
+    akurasi.value = result.data[1];
   } catch (error) {
     console.error("Error:", error);
   }
